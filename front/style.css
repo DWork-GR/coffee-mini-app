@@ -1,0 +1,46 @@
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background: #0f0f0f;
+  color: #fff;
+}
+
+header {
+  padding: 16px;
+  text-align: center;
+}
+
+main {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 16px;
+}
+
+.card {
+  background: #1a1a1a;
+  border-radius: 14px;
+  padding: 12px;
+}
+
+.card img {
+  width: 100%;
+  border-radius: 10px;
+}
+
+.card button {
+  width: 100%;
+  margin-top: 8px;
+  background: #c89b3c;
+  border: none;
+  border-radius: 10px;
+  padding: 10px;
+  font-weight: bold;
+}
+
+footer {
+  position: sticky;
+  bottom: 0;
+  padding: 12px;
+  background: #0f0f0f;
+}
