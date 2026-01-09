@@ -2,46 +2,40 @@ const tg = window.Telegram.WebApp;
 tg.expand();
 
 const products = [
-  { id: 1, name: "Espresso", price: 3 },
-  { id: 2, name: "Latte", price: 4 },
-  { id: 3, name: "Cappuccino", price: 4.5 },
-  { id: 4, name: "Flat White", price: 4 },
+  { id: 1, name: "Espresso", price: 3, img: "assets/espresso.jpg" },
+  { id: 2, name: "Latte", price: 4, img: "assets/latte.jpg" },
+  { id: 3, name: "Cappuccino", price: 4.5, img: "assets/cappuccino.jpg" },
+  { id: 4, name: "Flat White", price: 4, img: "assets/flatwhite.jpg" },
 ];
 
 const cart = {};
-const productsEl = document.getElementById("products");
-const cartBar = document.getElementById("cartBar");
-const cartText = document.getElementById("cartText");
+const list = document.getElementById("products");
 
-function updateCartUI() {
-  let items = 0;
+function updateMainButton() {
   let total = 0;
-
   for (const id in cart) {
-    items += cart[id].count;
-    total += cart[id].count * cart[id].price;
+    total += cart[id].price * cart[id].count;
   }
 
-  if (items === 0) {
-    cartBar.classList.add("hidden");
+  if (total === 0) {
     tg.MainButton.hide();
     return;
   }
-
-  cartText.textContent = `${items} items · $${total}`;
-  cartBar.classList.remove("hidden");
 
   tg.MainButton.setText(`Checkout · $${total}`);
   tg.MainButton.show();
 }
 
 products.forEach(p => {
-  const card = document.createElement("div");
-  card.className = "card";
+  const item = document.createElement("div");
+  item.className = "item";
 
-  card.innerHTML = `
-    <h3>${p.name}</h3>
-    <p>$${p.price}</p>
+  item.innerHTML = `
+    <img src="${p.img}">
+    <div class="info">
+      <h3>${p.name}</h3>
+      <span>$${p.price}</span>
+    </div>
     <div class="controls">
       <button>-</button>
       <span>0</span>
@@ -49,14 +43,14 @@ products.forEach(p => {
     </div>
   `;
 
-  const [minus, countEl, plus] = card.querySelectorAll("button, span");
+  const [minus, countEl, plus] = item.querySelectorAll("button, span");
 
   plus.onclick = () => {
     cart[p.id] ??= { ...p, count: 0 };
     cart[p.id].count++;
     countEl.textContent = cart[p.id].count;
     tg.HapticFeedback.impactOccurred("light");
-    updateCartUI();
+    updateMainButton();
   };
 
   minus.onclick = () => {
@@ -64,13 +58,12 @@ products.forEach(p => {
     cart[p.id].count--;
     if (cart[p.id].count <= 0) delete cart[p.id];
     countEl.textContent = cart[p.id]?.count || 0;
-    updateCartUI();
+    updateMainButton();
   };
 
-  productsEl.appendChild(card);
+  list.appendChild(item);
 });
 
 tg.MainButton.onClick(() => {
-  const order = Object.values(cart);
-  tg.sendData(JSON.stringify(order));
+  tg.sendData(JSON.stringify(Object.values(cart)));
 });
